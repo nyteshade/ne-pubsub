@@ -22,7 +22,7 @@
   "exports": {
     ".": {
       "import": "./dist/index.mjs",
-      "require": "./dist/index.js" 
+      "require": "./dist/index.js"
     }
   },
   "name": "@nyteshade/ne-pubsub",
@@ -31,7 +31,7 @@
     "build": "npx babel src --out-dir dist --extensions '.js' && cp src/index.mjs dist"
   },
   "type": "commonjs",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "dependencies": {
     "@jest/globals": "^29.7.0"
   }
