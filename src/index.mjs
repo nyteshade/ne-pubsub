@@ -1,4 +1,5 @@
-const { PubSub, Logs, Errors } = await import('./pubsub.mjs')
-const defaultObj = { PubSub, Logs, Errors }
+const bits = await import('./index.js')
+export default bits
 
-export { defaultObj as default, PubSub, Logs, Errors }
+const { PubSub, Errors, Logs } = bits 
+export { PubSub, Errors, Logs }

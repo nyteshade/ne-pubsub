@@ -1,5 +1,4 @@
-const {jest} = await import('@jest/globals')
-const { PubSub, Logs, Errors } = await import('./pubsub.mjs');
+import { PubSub, Logs, Errors } from './pubsub.js'
 
 describe('PubSub Class', () => {
   let testPubSub;
