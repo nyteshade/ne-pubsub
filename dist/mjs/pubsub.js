@@ -78,6 +78,8 @@ export class PubSub {
      * - `replayPreviousEvents` - if true, the subscriber will be
      * invoked for all previous events that have been fired if
      * this PubSub instance has been configured to track publishes
+     * @returns a function that when executed, removes the added
+     * listener from the list of subscribers
      */
     listen(eventName, subscriber, thisObj, options = {
         once: false,
@@ -89,13 +91,23 @@ export class PubSub {
         const subscribers = this.trackedEvents.get(eventName);
         const _handler = subscriber?.handler ?? subscriber;
         const _thisObj = thisObj ?? subscriber?.thisObj;
-        subscribers.push({ handler: _handler, thisObj: _thisObj, once: options.once });
+        const unsub = () => {
+            const index = subscribers.findIndex(e => e.handler === _handler);
+            subscribers.splice(index, 1);
+        };
+        subscribers.push({
+            handler: _handler,
+            thisObj: _thisObj,
+            once: options.once,
+            unsub
+        });
         if (options.replayPreviousEvents && this.trackedPublishes) {
             const publishes = this.trackedPublishes.get(eventName);
             for (let publish of publishes) {
                 _handler.apply(_thisObj, publish);
             }
         }
+        return unsub;
     }
     /**
      * Remove a subscriber from the list of subscribers for the
@@ -141,7 +153,7 @@ export class PubSub {
      * @param args the arguments to pass to the subscribers
      * @return an array of results from the subscribers
      */
-    publish(eventName, ...args) {
+    async publish(eventName, ...args) {
         if (!this.trackedEvents.has(eventName)) {
             throw new Error(`PubSub ${this.name} does not track ${eventName}`);
         }
@@ -151,13 +163,17 @@ export class PubSub {
             }
             this.trackedPublishes.get(eventName).push(...args);
         }
+        const isAsync = fn => !!/AsyncFunction/.exec(Object.prototype.toString.call(fn));
         const subscribers = this.trackedEvents.get(eventName);
         const results = [];
         for (let subscriber of subscribers) {
             try {
-                results.push(subscriber.handler.apply(subscriber.thisObj, args));
+                if (isAsync(subscriber.handler))
+                    results.push(subscriber.handler.apply(subscriber.thisObj, args));
+                else
+                    results.push(await subscriber.handler.apply(subscriber.thisObj, args));
                 if (subscriber.once) {
-                    this.unlisten(eventName, subscriber);
+                    subscriber.unsub();
                 }
             }
             catch (err) {
@@ -173,7 +189,7 @@ export class PubSub {
      * @param args the arguments to pass to the subscribers
      * @return an array of results from the subscribers
      */
-    fire(eventName, ...args) {
+    async fire(eventName, ...args) {
         return this.publish(eventName, ...args);
     }
     /**
@@ -183,8 +199,51 @@ export class PubSub {
      * @param args the arguments to pass to the subscribers
      * @return an array of results from the subscribers
      */
-    trigger(eventName, ...args) {
+    async trigger(eventName, ...args) {
         return this.publish(eventName, ...args);
+    }
+    /**
+     * A way of running the listeners in a manner similar to Array.reduce
+     * Each handler will be passed a value as an accumulator, and the
+     * expectation is that the handler will return the new state of the
+     * accumulator. The function will return the final shape of the
+     * accumulator object once it has run its course.
+     *
+     * @param {string|symbol} eventName the key for the event in question
+     * @param {any} initialValue the value, usually an object or array,
+     * that will be passed into the handler and reassigned with its return
+     * value
+     * @returns the final shape of the accumulator after all handlers or
+     * listeners are completed
+     */
+    async reduce(eventName, initialValue) {
+        if (!this.trackedEvents.has(eventName)) {
+            throw new Error(`PubSub ${this.name} does not track ${eventName}`);
+        }
+        if (this.trackedPublishes) {
+            if (!this.trackedPublishes.has(eventName)) {
+                this.trackedPublishes.set(eventName, []);
+            }
+            this.trackedPublishes.get(eventName).push(initialValue);
+        }
+        const isAsync = fn => !!/AsyncFunction/.exec(Object.prototype.toString.call(fn));
+        const subscribers = this.trackedEvents.get(eventName);
+        let accumulator = initialValue;
+        for (let subscriber of subscribers) {
+            try {
+                if (isAsync(subscriber.handler))
+                    accumulator = await subscriber.handler.call(subscriber.thisObj, accumulator);
+                else
+                    accumulator = subscriber.handler.call(subscriber.thisObj, accumulator);
+                if (subscriber.once) {
+                    subscriber.unsub();
+                }
+            }
+            catch (error) {
+                Errors.capture(error);
+            }
+        }
+        return accumulator;
     }
     /// Static functions and properties
     /**
@@ -286,7 +345,7 @@ Object.assign(Logs, {
                 };
                 return descriptor;
             }, {}));
-            // Replace the global console object with the Logs PubSub      
+            // Replace the global console object with the Logs PubSub
             Object.defineProperty(global, 'console', {
                 value: new Proxy(Logs, {
                     get: (target, prop) => {

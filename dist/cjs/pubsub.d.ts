@@ -67,11 +67,13 @@ export class PubSub {
      * - `replayPreviousEvents` - if true, the subscriber will be
      * invoked for all previous events that have been fired if
      * this PubSub instance has been configured to track publishes
+     * @returns a function that when executed, removes the added
+     * listener from the list of subscribers
      */
     listen(eventName: any, subscriber: any, thisObj: any, options?: {
         once: boolean;
         replayPreviousEvents: boolean;
-    }): void;
+    }): () => void;
     /**
      * Remove a subscriber from the list of subscribers for the
      * given event. Subscribers should be function. If subscriber
@@ -93,7 +95,7 @@ export class PubSub {
      * @param args the arguments to pass to the subscribers
      * @return an array of results from the subscribers
      */
-    publish(eventName: any, ...args: any[]): any[];
+    publish(eventName: any, ...args: any[]): Promise<any[]>;
     /**
      * Alias for `publish`
      *
@@ -101,7 +103,7 @@ export class PubSub {
      * @param args the arguments to pass to the subscribers
      * @return an array of results from the subscribers
      */
-    fire(eventName: any, ...args: any[]): any[];
+    fire(eventName: any, ...args: any[]): Promise<any[]>;
     /**
      * Alias for `publish`
      *
@@ -109,7 +111,22 @@ export class PubSub {
      * @param args the arguments to pass to the subscribers
      * @return an array of results from the subscribers
      */
-    trigger(eventName: any, ...args: any[]): any[];
+    trigger(eventName: any, ...args: any[]): Promise<any[]>;
+    /**
+     * A way of running the listeners in a manner similar to Array.reduce
+     * Each handler will be passed a value as an accumulator, and the
+     * expectation is that the handler will return the new state of the
+     * accumulator. The function will return the final shape of the
+     * accumulator object once it has run its course.
+     *
+     * @param {string|symbol} eventName the key for the event in question
+     * @param {any} initialValue the value, usually an object or array,
+     * that will be passed into the handler and reassigned with its return
+     * value
+     * @returns the final shape of the accumulator after all handlers or
+     * listeners are completed
+     */
+    reduce(eventName: string | symbol, initialValue: any): Promise<any>;
     /** The name of this PubSub instance */
     get [Symbol.toStringTag](): void;
 }

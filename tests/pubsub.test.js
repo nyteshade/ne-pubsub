@@ -25,37 +25,43 @@ describe('PubSub Class', () => {
       expect(testPubSub.trackedEvents.has('newEvent')).toBeTruthy();
     });
 
-    test('should allow subscribing to an event', () => {
+    test('should allow subscribing to an event', async () => {
       const mockHandler = jest.fn();
       testPubSub.listen('testEvent', mockHandler);
 
-      testPubSub.publish('testEvent');
+      await testPubSub.publish('testEvent');
       expect(mockHandler).toHaveBeenCalled();
     });
 
-    test('should remove a subscriber from an event', () => {
+    test('should remove a subscriber from an event', async () => {
       const mockHandler = jest.fn();
       testPubSub.listen('testEvent', mockHandler);
       testPubSub.unlisten('testEvent', mockHandler);
 
-      testPubSub.publish('testEvent');
+      await testPubSub.publish('testEvent');
       expect(mockHandler).not.toHaveBeenCalled();
     });
 
-    test('should handle publishing events with arguments', () => {
+    test('should handle publishing events with arguments', async () => {
       const mockHandler = jest.fn();
       testPubSub.listen('testEvent', mockHandler);
 
-      testPubSub.publish('testEvent', 'arg1', 'arg2');
+      await testPubSub.publish('testEvent', 'arg1', 'arg2');
       expect(mockHandler).toHaveBeenCalledWith('arg1', 'arg2');
+    });
+
+    test('should be able to reduce a value', async () => {
+      testPubSub.listen('testEvent', (current) => (current + 1));
+      testPubSub.listen('testEvent', (current) => (current + 2));
+
+      let result = await testPubSub.reduce('testEvent', 0);
+      expect(result).toBe(3);
     });
   });
 
   describe('Special Cases', () => {
-    test('should throw error for untracked events on publish', () => {
-      expect(() => {
-        testPubSub.publish('nonexistentEvent');
-      }).toThrow();
+    test('should throw error for untracked events on publish', async () => {
+      await expect(testPubSub.publish('nonexistentEvent')).rejects.toThrow();
     });
   });
 
