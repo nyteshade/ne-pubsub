@@ -128,22 +128,6 @@ export class PubSub {
      */
     reduce(eventName: string | symbol, initialValue: any): Promise<any>;
     /** The name of this PubSub instance */
-    get [Symbol.toStringTag](): void;
+    get [Symbol.toStringTag](): string;
 }
-/**
- * A PubSub instance for tracking console logs. It tracks the
- * following events:
- *
- * - log
- * - info
- * - warn
- * - error
- * - trace
- *
- * Optionally, it can be configured to record the messages but
- * not output them to the console by setting the `silent` flag
- * to true.
- */
-export const Logs: PubSub;
-export const Errors: PubSub;
 export default PubSub;

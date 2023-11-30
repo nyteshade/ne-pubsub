@@ -1,4 +1,6 @@
-import { PubSub, Logs, Errors } from './pubsub.js'
+import { PubSub } from './pubsub.js'
+import { Logs } from './logs.js'
+import { Errors } from './errors.js'
 
 const defaultObj = { PubSub, Logs, Errors }
 

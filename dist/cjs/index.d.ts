@@ -4,6 +4,6 @@ declare namespace defaultObj {
     export { Errors };
 }
 import { PubSub } from './pubsub.js';
-import { Logs } from './pubsub.js';
-import { Errors } from './pubsub.js';
+import { Logs } from './logs.js';
+import { Errors } from './errors.js';
 export { defaultObj as default, PubSub, Logs, Errors };
