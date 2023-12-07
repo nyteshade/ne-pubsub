@@ -1,7 +1,13 @@
 import { PubSub } from './pubsub.js'
 import { Logs } from './logs.js'
-import { Errors, CreateLocalErrors } from './errors.js'
+import { CreateLocalErrors } from './errors.js'
 
-const defaultObj = { PubSub, Logs, Errors, CreateLocalErrors }
+const Errors = CreateLocalErrors()
 
-export { defaultObj as default, PubSub, Logs, Errors, CreateLocalErrors }
+export { Errors, PubSub, Logs, CreateLocalErrors }
+export default {
+  PubSub,
+  Logs,
+  Errors,
+  CreateLocalErrors,
+}

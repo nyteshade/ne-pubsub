@@ -7,6 +7,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
 var _a, _PubSub_pubsubs;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PubSub = void 0;
+const index_js_1 = require("./index.js");
 /**
  * A simple PubSub implementation.
  */
@@ -191,7 +192,7 @@ class PubSub {
                 }
             }
             catch (err) {
-                Errors.capture(err);
+                index_js_1.Errors.capture(err);
             }
         }
         return results;
@@ -254,7 +255,7 @@ class PubSub {
                 }
             }
             catch (error) {
-                Errors.capture(error);
+                index_js_1.Errors.capture(error);
             }
         }
         return accumulator;

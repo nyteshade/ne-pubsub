@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Logs = void 0;
-const pubsub_js_1 = require("./pubsub.js");
+const index_js_1 = require("./index.js");
 /**
  * A PubSub instance for tracking console logs. It tracks the
  * following events:
@@ -16,7 +16,7 @@ const pubsub_js_1 = require("./pubsub.js");
  * not output them to the console by setting the `silent` flag
  * to true.
  */
-exports.Logs = new pubsub_js_1.PubSub('Logs', ['log', 'info', 'warn', 'error', 'trace'], { trackPublishes: true });
+exports.Logs = new index_js_1.PubSub('Logs', ['log', 'info', 'warn', 'error', 'trace'], { trackPublishes: true });
 /**
  * Additional properties and functions for the `Logs` `PubSub`
  * instance. Including the ability to replace the global
@@ -106,7 +106,7 @@ Object.assign(exports.Logs, {
             exports.Logs._replaced = true;
         }
         catch (err) {
-            Errors.capture(err);
+            index_js_1.Errors.capture(err);
         }
     },
     restore() {
@@ -125,7 +125,7 @@ Object.assign(exports.Logs, {
             }
         }
         catch (err) {
-            Errors.capture(err);
+            index_js_1.Errors.capture(err);
         }
     },
 });

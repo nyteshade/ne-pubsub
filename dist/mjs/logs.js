@@ -1,4 +1,4 @@
-import { PubSub } from './pubsub.js';
+import { PubSub, Errors } from './index.js';
 /**
  * A PubSub instance for tracking console logs. It tracks the
  * following events:

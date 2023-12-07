@@ -13,4 +13,4 @@
  * to true.
  */
 export const Logs: PubSub;
-import { PubSub } from './pubsub.js';
+import { PubSub } from './index.js';

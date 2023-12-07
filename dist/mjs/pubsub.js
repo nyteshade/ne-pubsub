@@ -1,3 +1,4 @@
+import { Errors } from './index.js';
 /**
  * A simple PubSub implementation.
  */

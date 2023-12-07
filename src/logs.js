@@ -1,4 +1,4 @@
-import { PubSub } from './pubsub.js'
+import { PubSub, Errors } from './index.js'
 
 /**
  * A PubSub instance for tracking console logs. It tracks the
@@ -18,7 +18,7 @@ export const Logs = new PubSub(
   'Logs',
   ['log', 'info', 'warn', 'error', 'trace'],
   { trackPublishes: true }
-)
+);
 
 /**
  * Additional properties and functions for the `Logs` `PubSub`

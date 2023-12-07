@@ -1,8 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Errors = exports.CreateLocalErrors = void 0;
-const pubsub_js_1 = require("./pubsub.js");
-const logs_js_1 = require("./logs.js");
+exports.CreateLocalErrors = void 0;
+const index_js_1 = require("./index.js");
 const ErrorsExtension = {
     /** Determine if thrown Errors should not be logged */
     get silent() { return this._silent; },
@@ -21,7 +20,7 @@ const ErrorsExtension = {
             error = new Error(String(error));
         }
         if (!this._silent) {
-            logs_js_1.Logs.error(error);
+            index_js_1.Logs.error(error);
         }
         this.fire('error', { date: Date.now(), error });
     }
@@ -34,13 +33,6 @@ const ErrorsExtension = {
  * capture publishes with a method to capture errors.
  */
 function CreateLocalErrors() {
-    return Object.assign(new pubsub_js_1.PubSub('Errors', ['error'], { trackPublishes: true }), ErrorsExtension);
+    return Object.assign(new index_js_1.PubSub('Errors', ['error'], { trackPublishes: true }), ErrorsExtension);
 }
 exports.CreateLocalErrors = CreateLocalErrors;
-/**
- * Constant global `Errors` instance that can be used across the
- * application as needed.
- *
- * @type {pubsub}
- */
-exports.Errors = CreateLocalErrors();

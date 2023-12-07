@@ -1,5 +1,4 @@
-import { PubSub } from './pubsub.js';
-import { Logs } from './logs.js';
+import { PubSub, Logs } from './index.js';
 const ErrorsExtension = {
     /** Determine if thrown Errors should not be logged */
     get silent() { return this._silent; },
@@ -33,10 +32,3 @@ const ErrorsExtension = {
 export function CreateLocalErrors() {
     return Object.assign(new PubSub('Errors', ['error'], { trackPublishes: true }), ErrorsExtension);
 }
-/**
- * Constant global `Errors` instance that can be used across the
- * application as needed.
- *
- * @type {pubsub}
- */
-export const Errors = CreateLocalErrors();

@@ -6,10 +6,3 @@
  * capture publishes with a method to capture errors.
  */
 export function CreateLocalErrors(): pubsub;
-/**
- * Constant global `Errors` instance that can be used across the
- * application as needed.
- *
- * @type {pubsub}
- */
-export const Errors: pubsub;
