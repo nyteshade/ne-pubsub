@@ -96,6 +96,7 @@ export class PubSub {
             const index = subscribers.findIndex(e => e.handler === _handler);
             subscribers.splice(index, 1);
         };
+        unsub.handler = _handler;
         subscribers.push({
             handler: _handler,
             thisObj: _thisObj,

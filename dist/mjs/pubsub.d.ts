@@ -73,7 +73,10 @@ export class PubSub {
     listen(eventName: any, subscriber: any, thisObj: any, options?: {
         once: boolean;
         replayPreviousEvents: boolean;
-    }): () => void;
+    }): {
+        (): void;
+        handler: any;
+    };
     /**
      * Remove a subscriber from the list of subscribers for the
      * given event. Subscribers should be function. If subscriber

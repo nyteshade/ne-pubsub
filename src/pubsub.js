@@ -122,6 +122,8 @@ export class PubSub {
       subscribers.splice(index, 1)
     }
 
+    unsub.handler = _handler
+
     subscribers.push({
       handler: _handler,
       thisObj: _thisObj,
